@@ -1,0 +1,1 @@
+Zaključna naloga pri MAF1 v letu 2025. Priložene so tudi vse LaTeX datoteke.
