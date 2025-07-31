@@ -1,0 +1,36 @@
+\begin{tikzpicture}[scale=2]
+    \coordinate (A) at (0.92,0.4);
+    \coordinate (B) at (1.55,1.16);
+    \coordinate (A') at (-0.92,0.4);
+    \coordinate (B') at (-1.55,1.16);
+    \fill [gray!20] (0,0) -- (0.5,0) arc (0:23:0.5) -- (0,0);
+    \draw [gray, dashed] (-0.6,0)--(0.6,0);
+    \draw (0.5,0) arc (0:23:0.5) node[below, xshift=-3.5pt] {$\frac{\varphi_0}{2}$};
+    \fill [black] (0,0) circle (0.1) node [above=3pt] {$m$};
+    \begin{scope}[shift={(A)}, rotate=24]
+        \fill [gray!20] (0,0) -- (0.4,0) arc (0:26:0.4) -- (0,0);
+        \draw [gray, dashed] (0,0)--(0.45,0);
+        \draw (0.4,0) arc (0:26:0.4) node[below=1pt, xshift=1pt] {$\varphi_1$};
+    \end{scope}
+    \draw (0,0) -- (A) node[midway,above] {$a$};
+    \fill [black] (A) circle (0.1) node [above=3pt, xshift=-2pt] {$m$};
+    \draw (A) -- (B) node[midway,above] {$a$};
+    \fill [black] (B) circle (0.1) node [above=3pt] {$m$};
+
+    \fill [gray!20] (0,0) -- (-0.5,0) arc (180:157:0.5) -- (0,0);
+    \draw (-0.5,0) arc (180:157:0.5) node[below, xshift=4pt] {$\frac{\varphi_0}{2}$};
+    \fill [black] (0,0) circle (0.1) node [above=3pt] {$m$};
+    \begin{scope}[shift={(A')}, rotate=-24]
+        \fill [gray!20] (0,0) -- (-0.4,0) arc (180:154:0.4) -- (0,0);
+        \draw [gray, dashed] (0,0)--(-0.45,0);
+        \draw (-0.4,0) arc (180:154:0.4) node[below=1pt, xshift=1pt] {$\varphi_1$};
+    \end{scope}
+    \draw (0,0) -- (A') node[midway,above] {$a$};
+    \fill [black] (A') circle (0.1) node [above=3pt, xshift=2pt] {$m$};
+    \draw (A') -- (B') node[midway,above] {$a$};
+    \fill [black] (B') circle (0.1) node [above=3pt] {$m$};
+
+
+    \draw[domain=-1.7:1.7, smooth, variable=\x, cyan, dotted, thick] plot ({\x}, {0.49*\x*\x});
+
+\end{tikzpicture}

@@ -1,0 +1,402 @@
+\documentclass{article}
+
+\input{TemplateDesign.tex}
+
+\begin{document}
+\naslov{Matematična fizika 1}{Žan Ambrožič}{doc. dr. Simon Čopar}{Bled}{26. 7. 2025}{Kakšno približno je osnovno upogibno nihanje enakomerne nabite gibke žičke?}
+
+\section{Uvod in opredelitev problema}
+Najprej moramo razmisliti o zahtevah naloge in kako se bomo problema lotili. Vprašanje nas sprašuje po najnižjih (osnovnih) nihajnih načinih žičke. Ker je enakomerno nabita, bomo najprej obravnavali nihanja, ki jih povzroča izključno električna sila. Žičko dolžine $L$ bomo modelirali kot tanko z neko dolžinsko gostoto $\mu$ in z dolžinsko gostoto naboja $q$ (ker je enakomerno nabita, mora biti iz električnega izolatorja). Kasneje upoštevamo še sile, ki so posledica deformacije žičke (in so uravnovešene, ko je žička zravnana). Naslednji popravek je upoštevanje profila žičke, ki ima nek presek.\\
+Na ta način izčrpamo večino možnosti. Poglejmo še ostale potencialne popravke:
+\begin{itemize}
+    \item stalna dolžinska gostota -- ker smo predpostavili enakomerno porazdelitev naboja, upravičeno lahko predpostavimo tudi stalen profil in dolžinsko masno gostoto;
+    \item vpeto ali prosto krajišče -- primera z enim ali brez vpetih krajišč sta si na videz zelo podobna, saj je nihanje žičke z enim vpetim krajiščem enako, kot prosto nihanje žičke z dvojno dolžino, dokler je navor v vpetem krajišču v smeri žičke enak 0 in žička ni nabita. Vendar Columbova sila spremeni situacijo -- postane pomembno, ali je zraven stena iz prevodnika, pri žički brez mehanskih notranjih sil pa se pri vpetju v enem krajišču odpre še veliko drugih problemov, izgine nam simetrija ipd. Omejili se bomo na prosto žičko in žičko, vpeto na sredini.
+    \item vpliv lastnega magnetnega polja -- ta popravek pride v poštev, ko deli žičke začnejo dosegati hitrost, ki ni več zanemarljiva v primerjavi s hitrostjo svetlobe. Pri nihanju fizične žičke se to v praksi težko zgodi, saj so hitrosti ves čas v klasični limit, kjer tega efekta ni;
+    \item gravitacije pri problemu ne bomo upoštevali.
+\end{itemize}
+
+\section{Reševanje problema}
+Žico bomo za začetek parametrizirali v dveh dimenzijah (parameter naj bo $s\in[-1,1]$):
+\begin{equation}
+    \vect{r}(s) = (x(s), y(s)).
+\end{equation}
+\subsection{Nihanje zaradi Columbove sile}
+Na vsaki točki žice lahko izračunamo električno polje, ki ga ustvarijo ostali naboji na žici (na makroskopski žici je naboj zvezen):
+\begin{equation}
+    \d\vect{E}(\vect{r}_0)=\int_{-1}^1\frac{q}{4\pi\varepsilon_0}\frac{\vect{r}(s)-\vect{r}_0}{|\vect{r}(s)-\vect{r}_0|^3}|\dot{\vect{r}}(s)|\d s.
+\end{equation}
+Tukaj hitro opazimo težave, integral je divergenten zaradi pola pri $\vect{r}_0$. Uberimo drugačen pristop tako, da problem diskretiziramo. Žičko bomo sestavili iz točkastih mas $m$ z naboji $Q$, povezanih v verigo z lahkimi togimi palicami dolžine $a$. Kot opredeljeno že v uvodu, je nihanje glede na središče simetrično. Model bo preprosto tudi nadgraditi, ko bomo upoštevali prožnost žice.
+\begin{figure}[H]
+    \centering
+    \include{skica_verige}
+    \caption{Aproksimacija žičke s točkastimi masami}
+    \label{pic:diskret}
+\end{figure}
+Začnimo s tročlensko verigo:\\
+V približku majhnih amplitud se uteži gibljejo le navpično. Zapišemo hitrosti robnih uteži v sistemu, kjer srednja miruje. Ta sistem ni inercialen, vendar hitro lahko izračunamo hitrost težišča ter jo odštejemo, da se postavimo v sistem, kjer bo žička prosto nihala okoli težišča:
+\begin{equation}
+    v_0'=0, v_1'=a\dot{\varphi};\quad v_*'=\frac{2}{3}v_1';\quad v_0+2v_1=0
+\end{equation}
+Za kinetično energijo dobimo:
+\begin{equation}
+    T = \frac{m}{2}\left(2\frac{a^2\dot{\varphi}^2}{36}+\frac{a^2\dot{\varphi}^2}{9}\right)=\frac{ma^2\dot{\varphi}^2}{12},
+\end{equation}
+\begin{equation}
+    V = V_{0,1}+V_{0,-1}+V_{-1,1}=V_0+V_{-1,1}=V_0+\frac{Q^2}{4\pi\varepsilon_0\cdot2a\cos(\varphi/2)}.
+\end{equation}
+Kot vidimo, bodo potenciali med sosednjima masama vedno enaki, zato bomo upoštevali le člene, za katere velja $|i-j|\ge2$. Za majhne odmike lahko razvijemo potencialno energijo:
+\begin{equation}
+    V = \frac{Q^2}{8\pi\varepsilon_0a}\left(1+\frac{\varphi^2}{8}+\bigO(x^4)\right).
+\end{equation}
+Za lastna nihajna načina dobimo rotacijo okrog centralne mase (ki ni razvidna iz enačbe, saj krši predpostavljeno simetrijo, ki zahteva enakost kotov) in nihanje s frekvenco $\omega_3=\sqrt{3Q^2/16\pi\varepsilon_0a^3m}$. V nadaljevanju si enačbe lahko malo skrajšamo, če jih pišemo v brezdimenzijski obliki, nastavimo:
+\begin{equation}
+    \frac{Q^2}{4\pi\varepsilon_0a}=1;\qquad\frac{ma^2}{2}=1.
+    \label{eq:brezdim}
+\end{equation}
+Tako dobimo za tročlensko verigo $\omega_3=\sqrt{3/8}$.\\
+
+Poglejmo si štiričlensko verigo:\\
+Notranji dve uteži se bosta gibali z nasprotno enakima hitrostma kot zunanji dve, zopet lahko vse skupaj izrazimo le z enim kotom in njegovim odvodom:
+\begin{equation}
+    T=4\frac{\dot{\varphi}^2}{4}=\dot{\varphi}^2.
+\end{equation}
+K potencialni energiji bodo prispevali trije členi: par nasprotnih zunanjih in notranjih ter odboj med zunanjima:
+\begin{equation}
+    V=2\cdot\frac{1}{2\cos(\varphi/2)}+\frac{1}{1+2\cos(\varphi)}\approx\frac{4}{3}+\frac{17\varphi^2}{72}.
+\end{equation}
+Za lastno frekvenco dobimo $\omega_4=\sqrt{17/72}$.\\
+
+Preden gremo na $N$-člensko verigo, poskusimo s petčlensko:\\
+Lokacije in hitrosti bomo pisali z dvodimenzionalnimi vektorji:
+\begin{equation}
+    \vect{r}_0'=\vect{0};\quad\vect{r}_1'=a\begin{bmatrix}
+        \cos(\varphi_0/2)\\
+        \sin(\varphi_0/2)
+    \end{bmatrix};\quad\vect{r}_2'=\vect{r}_1'+a\begin{bmatrix}
+        \cos(\varphi_1+\varphi_0/2)\\
+        \sin(\varphi_1+\varphi_0/2)
+    \end{bmatrix}.
+\end{equation}
+Z odvajanjem dobimo hitrosti, zanima nas tudi navpična hitrost težišča:
+\begin{equation}
+    \vect{v}_0'=0;\quad\vect{v}_1'=\frac{a\dot{\varphi}_0}{2}\begin{bmatrix}
+        -\sin(\varphi_0/2)\\
+        \cos(\varphi_0/2)
+    \end{bmatrix};\quad\vect{v}_2'=\vect{v}_1'+a(\dot{\varphi}_1+\dot{\varphi}_0/2)\begin{bmatrix}
+        -\sin(\varphi_1+\varphi_0/2)\\
+        \cos(\varphi_1+\varphi_0/2)
+    \end{bmatrix},
+\end{equation}
+\begin{equation}
+    v_{*,y}'=\frac{4a\cos(\varphi_0/2)\dot{\varphi}_0/2+2a\cos(\varphi_1+\varphi_0/2)(\dot{\varphi}_1+\dot{\varphi}_0/2)}{5}.
+\end{equation}
+S pomočjo Wolfram Mathematica odštejemo hitrost težišča in dobimo približek za kinetično energijo okoli ravnovesne lege:
+\begin{equation}
+    T=\frac{7\dot{\varphi_0}^2}{10}+\frac{8\dot{\varphi_0}\dot{\varphi_1}}{5}+\frac{6\dot{\varphi_1}^2}{5}.
+\end{equation}
+Sledi:
+\begin{equation}
+    \ten{T}=\frac{1}{10}\begin{bmatrix}
+        7&8\\
+        8&12
+    \end{bmatrix}.
+\end{equation}
+Za potencialno energijo imamo sedaj 6 členov:
+\begin{equation}
+    V=2V_{0,2}+V_{1,-1}+2V_{1,-2}+V_{2,-2}=
+\end{equation}
+\begin{equation}        
+    \frac{2}{2\cos(\varphi_1/2)}+\frac{1}{2\cos(\varphi_0/2)}+\frac{2}{\sqrt{(1+\cos(\varphi_0)+\cos(\varphi_1))^2+(\sin(\varphi_0)-\sin(\varphi_1))^2}}+\frac{1}{2\cos(\varphi_0/2)+2\cos(\varphi_0/2+\varphi_1)}.
+\end{equation}
+S parcialnimi odvodi v točki $(0,0)$ dobimo:
+\begin{equation}
+    \ten{V}=\begin{bmatrix}
+        \frac{145}{432}&\frac{59}{432}\\[1ex]
+        \frac{59}{432}&\frac{113}{54}
+    \end{bmatrix}.
+\end{equation}
+Za lastna nihajna načina mora veljati pogoj:
+\begin{equation}
+    \det(\ten{V}-\omega^2\ten{T})=0.
+\end{equation}
+Dobimo dve rešitvi, pogledamo manjšo frekvenco $\omega_5\approx\num{0,568}$ (druga je \num{1,56}).\\
+
+Poskusimo sedaj izpeljati energijo za $N$ delcev (liho število). Vzemimo $n=\lfloor N/2\rfloor$. Za kinetično energijo najprej potrebujemo hitrost, rekurzivna enačba v brezdimenzijski obliki velja za nenegativne $k$, za negativne moramo popraviti indeks prejšnjega člena (na desnega soseda) ter obrniti predznak sinusa.
+\begin{equation}
+    \vect{v}_{k}'=\vect{v}_{k-1}'+(\dot{\varphi}_0/2+\dot{\varphi}_1+\cdots+\dot{\varphi}_{|k|-1})\begin{bmatrix}
+        -\sin(\varphi_0/2+\varphi_1+\cdots+\varphi_{|k|-1})\\
+        \cos(\varphi_0/2+\varphi_1+\cdots+\varphi_{|k|-1})
+    \end{bmatrix},
+\end{equation}
+\begin{equation}        
+    \vect{v}_{*,y}'=\frac{\sum_{(i=-n)}^n\vect{v}_i'}{N},
+\end{equation}
+\begin{equation}
+    T=\sum_{i=-n}^n(\vect{v}_i'-\vect{v}_*')^2=v_*'^2+2\left(\sum_{i=1}^n(\vect{v}_i'-\vect{v}_*')^2\right).
+\end{equation}
+Ker smo v bližini ravnovesne lege, bomo poenostavili izraze tako, da so vsi koti 0 (razvijamo za odvode). Tako se tudi znebimo ene komponente, kar bistveno poenostavi izračune.
+\begin{equation}
+    v_{k}'=v_{|k|-1}'+(\dot{\varphi}_0/2+\dot{\varphi}_1+\cdots+\dot{\varphi}_{|k|-1})=|k|\dot{\varphi}_0/2+\sum_{i=1}^{|k|-1}((|k|-i)\dot{\varphi_i}),
+\end{equation}
+\begin{equation}
+    v_*'=\frac{2\sum_{(i=0)}^nv_i'}{N}=\frac{n(n+1)\dot{\varphi}_0/2}{N}+\sum_{i=1}^{n-1}\frac{i(i+1)\dot{\varphi}_{n-i}}{N},
+\end{equation}
+\begin{equation}
+    v_{k}'-v_*'=\left(|k|-\frac{n(n+1)}{N}\right)\frac{\dot{\varphi}_0}{2}+\sum_{i=1}^{n-1}A_{k,i}\dot{\varphi}_i;\qquad A_{k,i}=-\frac{(n-i)(n-i+1)}{N}+\begin{cases}
+        |k|-i; & i<|k|\\
+        0; & i\ge|k|
+    \end{cases}.
+\end{equation}
+Naj bo $$A_{k,0}=\frac{|k|}{2}-\frac{n(n+1)}{2N},$$
+tako lahko zapišemo
+\begin{equation}
+    v_k=\sum_{i=0}^{n-1}A_{k,i}\dot{\varphi}_i.
+\end{equation}
+Tenzor lahko sedaj sestavimo kot:
+\begin{equation}
+    T_{i,j}=\sum_{k=-n}^nA_{k,i}A_{k,j}=A_{0,i}A_{0,j}+2\sum_{k=1}^nA_{k,i}A_{k,j}.
+\end{equation}
+Če fiksiramo sredinsko maso, izračuni postanejo nekoliko lažji:
+\begin{equation}
+    T=\sum_{i=-n}^nv_i'^2,
+\end{equation}
+\begin{equation}
+    A_{k,0} = \frac{|k|}{2}; \quad A_{k,i}=\begin{cases}
+        |k|-i;&1\le i<|k|\\
+        0;&i\ge|k|
+    \end{cases}.
+\end{equation}
+Za potencialno energijo se moramo najprej vprašati, koliko diagonal ima $N$ kotnik? Naš sistem je konec koncev $N$ kotnik brez ene stranica in od kotov odvisni členi so tisti, ki so na diagonalah in manjkajoča stranica. Razdalja med poljubnima masama je:
+\begin{equation}
+    d(i,j)=\sqrt{(1+\cos(\varphi_{i+1})+\cdots+\cos(\varphi_{i+1}+\cdots+\varphi_{j-1}))^2+(\sin(\varphi_{i+1})+\cdots+\sin(\varphi_{i+1}+\cdots+\varphi_{j-1}))^2},
+    \label{eq:d}
+\end{equation}
+kar strnemo v:
+\begin{equation}
+    d(i,j)=\sqrt{\left(1+\sum_{k=i+1}^{j-1}\cos\left(\sum_{l=i+1}^{k}\varphi_l\right)\right)^2+\left(\sum_{k=i+1}^{j-1}\sin\left(\sum_{l=i+1}^{k}\varphi_l\right)\right)^2}.
+\end{equation}
+Za odvisni del potencialne energije potrebujemo člene, za katere velja $|i-k|\ge2$. Da se izgonemo ponovitvam, moramo dodati še pogoj $i<j$, sledi enoten pogoj $i+1<j$:
+\begin{equation}
+    V=\sum_{\substack{i,j\in[-n,n]\\i+1<j}}\frac{1}{d(i,j)}.
+\end{equation}
+Za tenozrja odvajamo $V$ in $T$ po vsakem od kotov oz. prvem odvodu kota, da dobimo druge parcialne odvode.\\
+
+Prvi parcialni odvod $V$, da bodo enačbe bolj pregledne in obvladljive, najprej vpeljimo naslednje oznake:
+\begin{equation}
+    C_{i,j}=1+\sum_{k=i+1}^{j-1}\cos\left(\sum_{l=i+1}^{k}\varphi_l\right);\qquad S_{i,j}=\sum_{k=i+1}^{j-1}\sin\left(\sum_{l=i+1}^{k}\varphi_l\right),
+\end{equation}
+\begin{equation}
+    C_{i,j}^{(x)}=\frac{\partial C_{i,j}}{\partial x};\qquad C_{i,j}^{(x,y)}=\frac{\partial^2 C_{i,j}}{\partial y\partial x},
+\end{equation}
+\begin{equation}
+    \frac{\partial V}{\partial\varphi_x}=\sum_{\substack{i,j\in[-n,n]\\i+1<j}}\frac{2C_{i,j}C_{i,j}^{(x)}+2S_{i,j}S_{i,j}^{(x)}}{2d(i,j)^3}.
+\end{equation}
+Sedaj moramo previdno določiti odvoda, v argumentu vsakega sinusa oz. kosinusa imamo namreč vsoto kotov, velja pa tudi $\varphi_{-l}=\varphi_l$, odvajamo pa le po neničelnih, zato dobimo v tem primeru lahko pri odvodu kompozituma še faktor 2, lahko pa se kakšen od kotov v vsoti sploh ne pojavi. Pri tem ne smemo pozabiti, da je $\varphi_0$ le en. Definirajmo faktor:
+\begin{equation}
+    f(i,k,x)=\begin{cases}
+        1;& x=0\wedge 0\in[i+1,k]\\
+        1\cdot[i+1\le -x\le k]+1\cdot[i+1\le x\le k];&x>0\\
+        0;&\text{sicer}
+    \end{cases}.
+    \label{eq:f}
+\end{equation}
+Sedaj lahko zapišemo prva parcialna odvoda:
+\begin{equation}
+    C_{i,j}^{(x)}=-\sum_{k=i+1}^{j-1}f(i,k,x)\sin\left(\sum_{l=i+1}^k\varphi_l\right);\qquad S_{i,j}^{(x)}=\sum_{k=i+1}^{j-1}f(i,k,x)\cos\left(\sum_{l=i+1}^k\varphi_l\right).
+\end{equation}
+Sedaj moramo še enkrat odvajati po poljubnem kotu. Pri tem bomo že lahko upoštevali, da smo v ravnovesni legi (vsi koti so 0), kar pomeni, da so vsi sinusni členi enaki 0:
+\begin{equation}
+    \frac{\partial^2V}{\partial\varphi_y\partial\varphi_x}=\sum_{\substack{i,j\in[-n,n]\\i+1<j}}\frac{C_{i,j}C_{i,j}^{(x,y)}+S_{i,j}^{(x)}S_{i,j}^{(y)}}{d(i,j)^3}.
+\end{equation}
+V ravnovesni legi so vsi kosinusi 1, zato velja:
+\begin{equation}
+    C_{i,j}=1+\sum_{k=i+1}^{j-1}1=j-i;\qquad d(i,j)=C_{i,j}=j-i.
+\end{equation}
+To nam še malo poenostavi izraz, sedaj moramo izračunati še $C_{i,j}^{(x,y)}$, kar pa ni težko, saj je argument sinusa še vedno nespremenjen. Vsak člen v vsoti enostavno pomnožimo s $f(i,k,y)$:
+\begin{equation}
+    C_{i,j}^{(x,y)}=-\sum_{k=i+1}^{j-1}f(i,k,y)f(i,k,x)\cos\left(\sum_{l=i+1}^k\varphi_l\right)\Bigg|_{\varphi=0}=-\sum_{k=i+1}^{j-1}f(i,k,y)f(i,k,x).
+\end{equation}
+Izraz je enak tudi v primeru pritrjenega središča žičke. S tem lahko enostavno sprogramiramo izračun tenzorja tudi za več deset členov dolge verige, kar je bistveno enostavneje, kot računanje Hessejeve matrike z Wolfram Mathematico, kjer proces postane počasen že pri $n=10$. V računanje lastnih nihanj se ne bomo poglabljali, saj imamo opravka s posplošenim problemom lastnih vrednosti. Matriki sta sicer simetrični in pozitivno semi-definitni (zato so vse lastne vrednosti nenegativne, posledično so nihajne frekvence realne), vendar numerični postopek ni cilj te naloge, zato za računanje preprosto uporabimo obstoječo knjižnico v Pythonu.
+
+Ko izračunamo lastne frekvence različno členjenih verig, ne smemo pozabiti, da še vedno gledamo približek za isto žičko. Temu primerno je treba upošteavati faktor
+\begin{equation}
+    \sqrt{\frac{Q^2}{a^3m}}; \qquad Q,a,m \propto \frac{1}{N}\quad\Rightarrow\quad N,
+\end{equation}
+zato je vsaka izračunana frekvenca prevelika za $N$-krat.
+\subsection{Mehanske notranje sile}
+Realna žička se tudi mehansko upira deformacijam, kar se pri našem načinu reševanja problema pozna na potencialni energiji. Najprej moramo ugotoviti, kakšna je odvisnost navora od upogiba. Naj ima material, iz katerega je žička prožnostni modul $E$ in kvadratni presek s stranico $b$ (oz. krožni s premerom $b$). Naj bo sredinska dolžina odseka žičke $l$. Ko se žička upogne, se oddaljenosti $h$ raztegne za $\Delta l(h)$. $R$ naj bo krivinski radij pri dani ukrviljenosti, velja:
+\begin{equation}
+    \frac{\Delta l(h)}{l}=\frac{h}{R}.
+\end{equation}
+Zaradi raztega (oz. skrčitve na nasprotni strani) se pojavijo sile, ki povzročijo navor, naj bo ploskvica preska $\mathcal{S}$:
+\begin{equation}
+    M=\int_\mathcal{S}\frac{E\Delta l(h)h}{R}\d S.
+\end{equation}
+Pokažimo za kvadraten in krožen presek:
+\begin{equation}
+    M_\square=\frac{Eb}{R}\int_{-b/2}^{b/3}h^2\d h=\frac{Eb^4}{12R};\quad M_\circ=\frac{E}{R}\int_{-b/2}^{b-2}2\sqrt{\left(\frac{b}{2}\right)^2-h^2}h^2\d h=\frac{E\pi b^4}{64R}.
+\end{equation}
+Za majhne upogibe velja:
+\begin{equation}
+    \frac{1}{R}\approx u''.
+\end{equation}
+Tako dobimo sorazmernost navora z drugim odvodom odmika od ravnovesja \cite{Kuščer_Kodre_Neunzert_Razpet_2016}. Sedaj moramo izračunati še diskretni odvod. Žičko zopet diskretiziramo: $u_i(t)=u(l_i,t)$. Za odvod uporabimo metodo nedoločenih koeficientov. Najprej razvijemo odmik za $d\ll l$ po Taylorju:
+\begin{equation}
+    u(l\pm d)=u(l)\pm u'(l)d+u''(l)\frac{d^2}{2}+\bigO(d^3).
+    \label{eq:taylor1}
+\end{equation}
+Za drugi odvod potrebujemo le prve 3 člene iz (\ref{eq:taylor1}), naj bo:
+\begin{equation}
+    u''(l)=\frac{1}{d^2}(Au(l-d)+Bu(l)+Cu(l+d)).
+\end{equation}
+Sedaj vstavimo razvoja za $l\pm d$ pri členih $A$ in $C$ ter pogledamo koeficiente pred vsakim od odvodov:
+\begin{equation}
+    u: A+B+C;\quad u': -Ad+Cd;\quad u'':(A+C)\frac{l^2}{2}.
+\end{equation}
+Za $u''$ nastavimo koeficienta pred $u$ in $u'$ na 0, koeficient $u''$ pa naj bo 1. Tako dobimo sistem treh enačb za tri neznanke in izračunamo $A=C=1, B=-2$, drugi odvod zapišemo s tremi členi:
+\begin{equation}
+    u''(l)=\frac{u(l-d)-2u(l)+u(l+d)}{d^2}\quad\rightarrow\quad u_i''=\frac{u_{i-1}-2u_i+u_{i+1}}{a^2}.
+\end{equation}
+Iz odmikov moramo preiti na kote, kot smo jih določili na skici \ref{pic:diskret}, seveda delamo v približku majhnih kotov:
+\begin{equation}
+    \varphi_i\approx \frac{u_{i-1}-u_i}{a}+\frac{u_{i+1}-u_i}{a}=au_i''.
+    \label{eq:ang_def}
+\end{equation}
+Sledi:
+\begin{equation}
+    M_i=\frac{EJ}{R_i}=\frac{EJ}{a}\varphi_i=D\varphi_i,
+\end{equation}
+kjer smo z $J$ označili geometrijski vztrajnostni moment preseka, ki je odvisen od oblike. Tako smo pokazali, da je navor res sorazmeren s kotom odmika od ravne verige. Potencialna energija se zato poveča za:
+\begin{equation}
+    \Delta V=\sum_{i=-n}^n\frac{D}{2}\varphi_i^2.
+\end{equation}
+Sprememba $\ten{V}$ je zelo preprosta, saj imamo le diagonalne člene. Paziti moramo le, da je centralni člen samo en, ostali pa so podvojeni, zato prištejemo
+\begin{equation}
+    \Delta\ten{V}=\frac{D}{2}\begin{bmatrix}
+        1 & & & \\
+        & 2 & & \\
+        & & \ddots & \\
+        & & & 2
+    \end{bmatrix}.
+\end{equation}
+Da preidemo nazaj na brezdimenzijsko obliko, moramo uvesti faktor $k$, ki opisuje trdnost žičke glede na elektrostatske sile:
+\begin{equation}
+    k=\frac{EJ}{2a}\frac{4\pi\varepsilon_0a}{Q^2}=\frac{2EJ\pi\varepsilon_0N^2}{q^2L^2}.
+\end{equation}
+Če upoštevamo enačbo (\ref{eq:brezdim}), se $k$ z razčlembo žičke skalira kot
+\begin{equation}
+    k\propto\frac{1}{a}\propto N.
+\end{equation}
+Diagonalno matriko pred prištevanjem zato pomnožimo s $kN$.
+
+\section{Lastne vrednosti in oblika žičke}
+V tem delu bomo lastne frekvence že koregirali glede na dolžino verige, na ta način lahko ugotovimo, h kateri vrednosti konvergira vrsta, ko večamo število členov in se efektivno približujemo zvezni žički. Poglejmo najprej prosto mehko (enakomerno nabito, brez mehanskih notranjih sil) žičko. V tabeli \ref{tab:konv1} je nekaj osnovnih nihajnih frekvenc za različno razčlenjene verige. S pomočjo Aitkenove metode lahko izračunamo limito zaporedja, ne da bi računali prevelike člene (ker je računanje $\ten{V}$ tudi v zapisani obliki še vedno precej potratno (red $\bigO(N^5)$) za zelo velike $N$, upoštevamo delitve na 3-51 členov).
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c c|}
+        \hline
+        $N$ & $\omega$\\
+        \hline
+        3 & \num{2,5981}\\
+        5 & \num{2,8417}\\
+        7 & \num{2,9471}\\
+        9 & \num{3,0030}\\
+        11& \num{3,0366}\\
+        21& \num{3,0991}\\
+        31& \num{3,1163}\\
+        41& \num{3,1236}\\
+        51& \num{3,1274}\\
+        71& \num{3,1311}\\
+        101&\num{3,1334}\\
+        \hline
+        $\infty$ & \num{3,1359}\\
+        \hline
+    \end{tabular}
+    \caption{Osnovna nihajna frekvenca mehke žičke za različna števila delitev}
+    \label{tab:konv1}
+\end{table}
+\noindent Pri enaki žici s pritrjenim sredinskim členom je osnovna frekvenca pričakovano nižja in je približno $\num{1,9712}$ (\num{0,629} glede na prosto).
+
+Pri realni žički pričakujemo višje osnovne frekvence, saj poleg Columbove sile na žičko delajo še mehanske sile, ki prav tako kažejo proti ravnovesni legi. Za različne vrednosti $k$ primerjamo osnovne frekvence za $N=51$.
+\begin{graph}[H]
+    \centering
+    %\includegraphics[width=0.6\textwidth]{Graf_k.png}
+    \include{gr1.tex}
+    \caption{Odvisnost osnovne frekvence od trdnosti žičke}
+    \label{gr:w_k}
+\end{graph}
+\noindent Če gledamo razmerje med frekvencama, je enako v obeh primerih. S črtkanima krivuljama na grafu \ref{gr:w_k} sta označeni še odvisnosti frekvenc za nenabito (nevtralno) žičko, ki predstavljata asimptoti osnovni frekvenci proste oz. pritrjene nabite žičke, lastno frekvenco realne žičke lahko opišemo kot
+\begin{equation}
+    \omega^2(k)=\omega^2(0)+\omega^2_\text{nenabita}(k).
+\end{equation}
+
+Upogibna oblika žičke je zelo podobna pričakovani za nihanje žičke, naboj le malo spremeni obliko. Oblike bomo primerjali tako, da bomo pri vseh nastavili odmik krajišč na enako lego (s primernim skaliranjem lastnega vektorja). Zaradi preglednosti gledamo le polovico žičke, navpična os pa je povečana, zato so bolj strmi deli grafa raztegnjeni.
+\begin{graph}[H]
+    \centering
+    %\includegraphics[width=0.8\textwidth]{Graf_v1.png}
+    \include{gr2.tex}
+    \caption{Oblike osnovnih nihajnih načinov}
+    \label{gr:w_v}
+\end{graph}
+Prožnost nevtralne žičke in naboj mehke žičke ne vplivata na obliko, saj se potencialna energija spremeni le za faktor, kar se pozna le na lastni vrednosti oz. na frekvenci nihanja. Oblika osnovnega lastnega nihanja je različna za prosto in pritrjeno žičko, nanjo pa vpliva še razmerje med nabojem in prožnostjo. Na grafu \ref{gr:w_v} opazimo zanimivost, da se pri pritrjeni žički z večanjem $k$ ukrivljenost osnovnega načina veča, pri prosti pa je ravno obratno. Skrajni možnosti sta mehki nabiti žički, znotraj pa je očitno prepovedano območje med načini za prosto in pritrjeno žičko, ki se mu z obeh strani približamo z večanjem $k$, do efektivno nevtralne (nenabite) žičke. Največja razlika med različno prožnimi žičkami je za prosta nihanja na zunanji četrtini celotne žičke, za pritrjena nihanja pa na notranjih dveh četrtinah (celotne žičke). Analitično se tega ne moremo lotiti, saj bi morali gledati spremembe lastnih vektorjev, ko se spremeni ena od matrik ter posledično tudi pripadajoča lastna vrednost. Dobili bi matrični sistem:
+\begin{equation}
+    \ten{V}\vect{v}=\lambda\ten{T}\vect{v}\quad\rightarrow\quad (\ten{V}+\delta k N \cdot\text{diag}(1,2,\cdots, 2))(\vect{v}+\delta\vect{v})=(\lambda+\delta\lambda)\ten{T}(\vect{v}+\delta\vect{v}).
+    \label{eq:eig_chg}
+\end{equation}
+Najprej poskusimo oceniti spremembo najmanjše lastne vrednosti. Pri numeričnih metodah iskanja lastnih vrednosti pogosto kot kriterij za ustavitev iteracije uporabljamo Rayleighov kvocient, ki konvergira k lastni vrednosti, ko vektor konvergira k pripadajočemu lastnemu vektorju. Ob predpostavki, da se naš lastni vektor spremeni relativno malo, lahko ocenimo spremembo pripadajoče najmanjše lastne vrednosti:
+\begin{equation}
+    \delta\lambda=\frac{\vect{v}^T (\delta k N\cdot\text{diag}(1,2,\cdots,2))\vect{v}}{\vect{v}^T\ten{T}\vect{v}}.
+\end{equation}
+V enačbi (\ref{eq:eig_chg}) lahko zanemarimo mešani člen ($\delta\lambda\ten{T}\delta\vect{v}$) in odstranimo tista člena, ki se po levi enakosti odštejeta, ostane nam:
+\begin{equation}
+    (\ten{V}+\delta k N\cdot\text{diag}(1,2,\cdots,2)-\lambda\ten{T})\delta\vect{v}=(\delta\lambda\ten{T}-\delta k N\cdot\text{diag}(1,2,\cdots,2))\vect{v}.
+\end{equation}
+Od tod pa lahko enolično izrazimo $\delta\vect{v}$. Da bomo res videli spremembo oblike, moramo oba vektorja ($\vect{v}$ in $\vect{v}+\delta\vect{v}$) normirati.
+Oglejmo si primer za mehko žičko z delitvijo na $N=51$, ki ji dodamo mehansko trdnost $\delta k=\num{0,01}$. Najnižja lastna vrednost sistema se spremeni za \num{4,06e-5} (prvotno je bila \num{3,76e-3}; opomba: to ni frekvenca lastnega nihanja, saj ni korenjena in pomnožena glede na število delitev), kar je dovolj majhna sprememba. Dobljeno spremebo lastnega vektorja po posameznih kotih lahko primerjamo z dejansko izračunano razliko. Približek se zelo dobro ujema, kot je razvidno na grafih \ref{gr:aprox} in \ref{gr:aprox2}.\\
+\begin{minipage}{0.5\textwidth}
+    \begin{graph}[H]
+        \centering
+        %\includegraphics[width=0.95\textwidth]{aproksimacija.png}
+        \include{gr3.tex}
+        \caption{Približek spremebe lastnega vektorja in dejanska sprememba (prosta)}
+        \label{gr:aprox}
+    \end{graph}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{graph}[H]
+        \centering
+        %\includegraphics[width=0.95\textwidth]{aproksimacija2.png}
+        \include{gr4.tex}
+        \caption{Približek spremebe lastnega vektorja in dejanska sprememba (pritrjena)}
+        \label{gr:aprox2}
+    \end{graph}
+\end{minipage}\\
+
+\vspace{1ex}
+\noindent Za konec poskusimo parametrizirati žičko kot zvezno krivuljo ($x(s)=s, y(s)=u(s)$). Prosto upogibno nihanje prožne nenabite palice se za majhne odmike da opisati kot linearno kombinacijo realnih in imaginarnih eksponentov lege \cite{Kuščer_Kodre_Neunzert_Razpet_2016}. Ker je žička simetrična glede na izhodišče, lihi členi odpadejo. Ker izhodišče kooridnatnega sistema vedno postavimo v sredinski člen žičke, od krajevnega dela ostane le:
+\begin{equation}
+    u(l)=A\cos(bl)-A\cosh(cl).
+\end{equation}
+Rešujemo diferencialno enačbo \cite{Kuščer_Kodre_Neunzert_Razpet_2016}:
+\begin{equation}
+    EJ\frac{\partial^4u}{\partial l^4}=-\mu\frac{\partial^2u}{\partial t^2}+\mu SJ\frac{\partial^4u}{\partial l^2\partial t^2},
+\end{equation}
+\begin{equation}
+    EJu^{(4)}+\mu SJ\omega^2u''-\mu\omega^2u=0.
+    \label{eq:beam}
+\end{equation}
+Tu pa nastopi problem, saj električne potencialne energije ne moremo tako preprosto vpeljati, še težje pa je problem analitično rešiti. S fitanjem ugotovimo, da se za primere proste žice in vpeto nenabito dobro prilega kosinus, pri vpeti nabiti pa ne pomaga niti hiperbolični člen ($\cosh$). Faktor v argumentu kosinusa ($b$) narašča in se približuje določeni vrednosti $B$ približno kot $b(k)\approx B-1/(C+k)$ vendar smo do te zveze prišli z iskanjem primerne funkcije. Ustrezajo tudi nekatere bolj komplicirane funkcije in glede na možne izpeljave iz enačbe (\ref{eq:beam}) bi bila morda smiselnejša kakšna druga, vendar po vsej verjetnosti ne bi bila tako preprosta.\\
+
+Tako lahko zaključimo, da je upogibno nihanje enakomerno nabite žičke analitično težko opisljiv pojav, vendar z primernimi približki vseeno lahko pridemo do smiselnega osnovnega nihanja (vsaj za majhne odmike) v obliki, podobni kosinusu, kot je prikazano na grafu \ref{gr:cos}.
+\begin{graph}[H]
+    \centering
+    %\includegraphics[width=0.7\textwidth]{cos.png}
+    \include{gr5.tex}
+    \caption{Oblika žičke in najbolje se prilegajoča kosinusna funkcija}
+    \label{gr:cos}
+\end{graph}
+\noindent Z izpeljanimi enačbami pridemo tudi do višjih resonančnih oblik sode oblike. Za ostale bi morali malo predelati enačbo (\ref{eq:d}) in vse, ki sledijo iz nje tako, da bi negativni koti imeli negativen predznak v sinusih, kar pa bi za $f(i,k,x)$ (\ref{eq:f}) pomenilo dodatne razrede. S tako dobljeno enačbo bi lahko modelirali še manjkajoče oblike z liho simetrijo.
+
+
+\printbibliography
+\end{document}

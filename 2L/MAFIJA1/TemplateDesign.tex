@@ -1,0 +1,74 @@
+\usepackage{lipsum}
+\usepackage{mathabx}
+\usepackage{float}
+\newfloat{graph}{htbp}{log} 
+\floatname{graph}{Graf}
+\usepackage{accents}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{mhchem}
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+\usepackage[slovene]{babel}
+\usepackage[makeroom]{cancel}
+%output-decimal-marker = {,},
+%\sisetup{
+%per-mode = symbol,
+%exponent-product = \ensuremath { { } \cdot { } },
+%separate-uncertainty=true}
+
+\usepackage{graphicx}
+
+\usepackage[a4paper, total={7in,10in}]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\newcommand{\naslov}[6]{
+\thispagestyle{empty}
+\begin{center}
+    \textit{    
+    Univerza v Ljubljani\\
+    Fakulteta za matematiko in fiziko\\}
+    \vspace{2 cm}
+    \large{\bf #1\\Zaključna naloga}\\
+    \vspace{2 cm}
+    \large{Avtor: #2}\\
+    \vspace{0.5cm}
+    Mentor: {#3}\\
+    \vspace{3.5 cm}
+    Vprašanje:\\
+    \textit{#6}\\
+    \vspace{13 cm}
+    \normalsize{#4}, \normalsize{#5}\\
+\end{center}
+\newpage
+
+\fancyhead[LO]{\textbf{#2}}
+\fancyhead[CO]{\textbf{FMF UL: #1}}
+\fancyhead[RO]{\textbf{#5}}
+}
+
+\usepackage{siunitx}
+\sisetup{
+output-decimal-marker = {,},
+per-mode = symbol,
+exponent-product = \ensuremath{ { } \cdot { } },
+separate-uncertainty=true}
+
+\usepackage{tikz} 
+\usepackage{tikzsymbols}
+
+\usepackage{pgfplots}
+
+%\newcommand{\vect}[1]{\accentset{\rightharpoonup}{#1}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\ten}[1]{\underline{\underline{#1}}}
+
+\renewcommand{\figurename}{Slika}
+\renewcommand{\tablename}{Tabela}
+
+\DeclareMathOperator{\grad}{grad}
+\DeclareMathOperator{\Div}{div}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\bigO}{\mathcal{O}}
+\renewcommand{\d}{\mathrm{d}}
