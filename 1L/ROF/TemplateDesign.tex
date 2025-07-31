@@ -1,0 +1,65 @@
+\usepackage{lipsum}
+\usepackage{mathabx}
+\usepackage{float}
+\usepackage{accents}
+\usepackage{caption}
+\usepackage[dmyyyy]{datetime}
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+\usepackage[slovene]{babel}
+\usepackage{stmaryrd}
+\usepackage{amsmath}
+\usepackage{newfloat}
+\usepackage{adjustbox}
+\usepackage[slovene]{babel}
+\usepackage{indentfirst}
+\usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\renewcommand{\dateseparator}{. }
+%output-decimal-marker = {,},
+%\sisetup{
+    %per-mode = symbol,
+    %exponent-product = \ensuremath { { } \cdot { } },
+    %separate-uncertainty=true}
+    
+\usepackage{graphicx}
+
+\usepackage[a4paper, total={6in,9in}]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+
+\newcommand{\naslov}[3]{
+    \title{#1}
+    \author{#2}
+    \date{#3}
+    \maketitle
+    
+    \fancyhead[LO]{\textbf{#2}}
+    \fancyhead[CO]{\textbf{#1}}
+    \fancyhead[RO]{\textbf{#3}}
+    }
+
+\newcommand{\xdownarrow}[1]{%
+{\left\downarrow\vbox to #1{}\right.\kern-\nulldelimiterspace}
+}
+
+\usepackage{siunitx}
+\sisetup{
+output-decimal-marker = {,},
+per-mode = power,
+exponent-product = \ensuremath{ { } \cdot { } },
+separate-uncertainty=true}
+
+\usepackage{tikz} 
+\usepackage{tikzsymbols}
+
+\newcommand{\vect}[1]{\accentset{\rightharpoonup}{#1}}
+
+\DeclareFloatingEnvironment[fileext=lof,placement={H},name=Graf]{graph}
+
+\renewcommand{\figurename}{Slika}
+\renewcommand{\tablename}{Tabela}

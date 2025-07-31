@@ -1,0 +1,382 @@
+\documentclass{article}
+\input{TemplateDesign.tex}
+
+\begin{document}
+\pagenumbering{None}
+\naslov{Precesija Lunine orbite}{Žan Ambrožič}{\today}
+\vspace{0.45\textwidth}
+\begin{center}
+    \textit{\large Zaključna naloga pri predmetu Računalniška orodja v fiziki v letu 2023/24}\\
+    \vspace{0.62\textwidth}
+    \large Fakulteta za matematiko in fiziko\\
+    Univerza v Ljubljani\\
+\end{center}
+\newpage
+
+\pagenumbering{roman}
+\setcounter{page}{1}
+\section*{Povzetek}
+\addcontentsline{toc}{section}{\protect\numberline{}Povzetek}
+V tej nalogi bom numerično simuliral gibanje Lune v sistemu Zemlja-Luna pod vplivom gravitacije Sonca. Glavni cilj naloge je poiskati periodi precesij vozlov in apsidnih točk, poleg tega pa bi rad preveril še ujemanje ostalih parametrov (npr. ekscentričnost orbite) z realnimi. Ob nekaj predpostavkah, ki nam omogočajo preprosto simulacijo bom poskusil dobiti kar se da natančne podatke z uporabo kakor se da realnih začetnih parametrov. Na koncu bom preizkusil, ali simulacija pravilno napove položaje Lune v orbiti za avgust 2024 (mesec po pisanju te naloge).
+
+\newpage
+\thispagestyle{fancy}
+\tableofcontents
+\thispagestyle{fancy}
+\newpage
+\pagenumbering{arabic}
+
+\section{Uvod}
+V tej nalogi bom numerično simuliral precesijo Lunine orbite, natančneje precesiji apsidnih točk in vozlov. Iz navodil naloge izvemo, periodi obeh precesij in nagnjenost Lunine orbite glede na ekliptiko:
+
+\begin{tabular}{@{$\bullet$\quad}ll}
+    perioda precesije apsidnih točk: & $t_A=\SI{8,85}{let}$,\\
+    perioda precesije vozlov: & $t_V=\SI{18,6}{let}$,\\
+    nagnjenost Lunine orbite: & $\gamma=\ang{5,15}$.
+\end{tabular}\\
+Za numerično simulacijo bom uporabil \textit{Python 3} s knjižnicami \textit{numpy}, \textit{scipy} in \textit{matplotlib}.
+\\Za pravilen zapis enot v \LaTeX-u uporabljam \textit{siunitx}.
+\section{Začetni podatki in predpostavke}
+
+Po zahtevah naloge bom predpostavil, da je orbita težišča sistema Zemlja-Luna okoli Sonca krožna, simulirana telesa pa so točkasta.
+\subsection{Pridobljeni splošni podatki}
+
+Da bi se izognili anomalijam zaradi podatkov iz različnih virov, jih bomo uporabili čim manj, manjkajoče pa bomo kasneje izračunali (\ref{sec:izr_pod}). Potrebujemo mase vseh teles, ter obhodna časa Zemlje (okoli Sonca) in Lune (okoli Zemlje, siderski čas). Ker se ekscentričnost Lunine orbite spreminja (zaradi vpliva Sonca), jo bomo nastavili, ko bomo izbrali začetno točko.
+
+\begin{tabular}{@{$\bullet$\quad}ll}
+    masa Sonca\cite{wiki:Sun}: & $M_\odot=\SI{1,99e30}{\kilo\gram}$,\\
+    masa Zemlje\cite{wiki:Earth}: & $M_\varoplus=\SI{5.97e26}{\kilo\gram}$,\\
+    masa Lune\cite{wiki:Moon}: & $M_\leftmoon=\SI{7.34e22}{\kilo\gram}$,\\
+    obhodni čas Zemlje\cite{wiki:Earth}: & $t_\varoplus=\SI{365,26}{dni}$,\\
+    obhodni čas Lune/siderski mesec \cite{wiki:Moon}: & $t_\leftmoon=\SI{27,321661}{dni}$.
+\end{tabular}\\
+\label{sec:pridob_pod}
+
+\subsection{Začetna točka}
+
+Ker ima zaradi vplivov ostalih teles Osončja Lunina orbita veliko anomalij -- npr. ekscentričnost se spreminja neperiodično, ipd. -- moramo izbrati specifičen trenutek, za katerega poznamo čim več podatkov. Iz podatkov, ki sem jih našel, sem se odločil za začetek izbrati 26. avgust 2008. Na ta dan je bila Luna v perigeju, kjer je lahko izračunati tangencialno hitrost, saj iz definicije perigeja direktno sledi, da je pravokotna na radij-vektor od težišča. Na spletu za ta dan dobimo podatke\footnote{poleg spletnih strani uporabimo še spletno aplikacijo \textit{Stellarium Web}}:
+
+\begin{tabular}{@{$\bullet$\quad}ll}
+    ekscentričnost v perigeju\cite{NASA:Lunar_orbit}: & $e_0=\SI{0,0341}{}$,\\
+    razdalja v perigeju\cite{apsid_calc}: & $r_0=\SI{3,68692e8}{\meter}$,\\
+    čas do mlaja\cite{apsid_calc}: & $t_{mlaj}=\SI{112}{\hour}$,\\
+    razdalja od Sonca v mlaju\footnotemark[1]: & $\lambda_{mlaj}=\ang{-2,6}, \xdownarrow{3 pt}$
+\end{tabular}\\
+
+\subsection{Izračunani podatki}
+\label{sec:izr_pod}
+\textit{Opomba: navedene numerične vrednosti so zgolj za bralčev občutek in niso tako točne kot znotraj programa, saj v vmesnih korakih ne zaokrožuje.}
+
+Razdaljo Zemlja-Sonce lahko izračunamo po 3. Keplerjevem zakonu (\ref{eq:kepler3}).
+\begin{equation}
+    d_{Z-S}=\sqrt[3]{\frac{GM_\odot t_\varoplus}{4\pi^2}}=\SI{1,50e11}{\meter}
+    \label{eq:kepler3}
+\end{equation}
+
+Izračunati moramo še veliko polos Lunine orbite, kar je v perigeju precej preprosto (\ref{eq:a_lune}).
+\begin{equation}\label{eq:a_lune}
+    a_\leftmoon=\frac{r_0}{1-e_0}\approx\SI{3,82e8}{\meter}
+\end{equation}
+
+Za Luno sedaj potrebujemo še začetno oddaljenost od izhodišča oz, težišča sistema (\ref{eq:r_l})
+\begin{equation}\label{eq:r_l}
+    r_{\leftmoon, 0}=r_0\frac{M_\varoplus}{M_\varoplus+M_\leftmoon}\approx r_0
+\end{equation}
+
+Če zanemarimo eliptičnost Lunine orbite, lahko predpostavimo, da se oddaljenost Lune od ekliptike spreminja sinusno približno s periodo obhoda (\ref{eq:prec_gamma}) (glede na natančnost kota je to dober približek, saj poznamo pričakovano periodo precesije vozlov oz. drakonski mesec, ki se le malo razlikuje od siderskega).
+\begin{equation}\label{eq:prec_gamma}
+    z_{\leftmoon,0}=r_0\gamma\sin{(\delta)}\approx\SI{1,7e7}{\meter}
+\end{equation}
+Ker poznamo kot ($\arctan(z_{\leftmoon,0}/r_0)\approx z_{\leftmoon,0}/r_0$) in vemo, da pada, lahko enolično določimo fazo: $\delta\approx\ang{210}$, a ker je to ob mlaju (30. avgusta 2008, 19:59UTC), nas pa zanima položaj ob perigeju (26. avgust 2008, 3:45UTC), moramo odšteti približno \ang{60}, tako pa dobimo začetno fazo $\delta_0\approx\ang{150}$.
+Seveda komponenta hitrosti, pravokotno na ekliptiko, v tej točki ni 0, lahko pa jo izračunamo s pomočjo odvoda kotne oddaljenosti od ekliptike (\ref{eq:prec_gamma}), če vemo, da se faza $\delta$ spreminja s kotno hitrostjo $2\pi/t_\leftmoon$ (\ref{eq:v_z}).
+\begin{equation}\label{eq:v_z}
+    \Dot{z}_{\leftmoon, 0}=r_0\gamma\frac{2\pi}{t_\leftmoon}\cos{(\delta)}\approx\SI{-77}{\meter\per\second}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \input{sistem.tikz}
+    \caption{Skica začetne točke (nekateri parametri) in koordinatnega sistema simulacije (ni v merilu)}
+    \label{fig:sis}
+\end{figure}
+
+Kot od Sonca lahko ocenimo enako kot razliko faze ($\delta$) med perigejem in mlajem, ko je kotna razdalja v ravnini ekliptike 0. Tako dobimo za razliko zopet \ang{62}, začetni kot Sonca v koordinatnem sistemu tako znaša $\theta_0=\ang{242}$. Zaradi moje izbire pri nastavitvi simulacije je začetni perigej na $\varphi_0=\ang{180}$ (kota sta označena na skici \ref{fig:sis}).
+
+Ker je Luna v začetni točki v perigeju, ima v ravnini ekliptike le tangencialno hitrost, ki jo lahko ocenimo (natančno določiti bi jo bili težko zaradi že omenjenih anomalij, ki jih povzroča Sonce) s pomočjo 2. Keplerjevega zakona (\ref{eq:kepler2}), ki pravi, da je ploščinska hitrost v orbiti konstantna oz. da se vrtilna količina ohranja. Iz definicije ekscentričnosti (\ref{eq:eksc}) lahko dobimo še malo polos orbite, tako pa ploščino elipse. Ker je hitrost v perigeju pravokotna na radij-vektor od težišča oz. izhodišča, je vektorski produkt po velikosti enak kar produktu velikosti oddaljenosti od težišča in hitrosti Lune. Iz dobljene enačbe (\ref{eq:kepler_elipsa}) lahko neposredno izrazimo hitrost Lune v začetni točki (\ref{eq:vlt0}).
+\begin{equation}
+    \frac{\partial{S}}{\partial{t}}=konst.={\bf r\times v}
+    \label{eq:kepler2}
+\end{equation}
+\begin{equation} \label{eq:eksc}
+    e=\sqrt{1-\frac{b^2}{a^2}}
+\end{equation}
+\begin{equation}\label{eq:kepler_elipsa}
+    \frac{\partial{S}}{\partial{t}}=\frac{\pi a_\leftmoon b_\leftmoon}{t_\leftmoon}=\frac{\pi a_\leftmoon^2\sqrt{1-e^2}}{t_\leftmoon}={\bf r\times v}= r_{\leftmoon,0}v_{\leftmoon,0}    
+\end{equation}
+\begin{equation}\label{eq:vlt0}
+    v_{\leftmoon,0}=\frac{\pi a_\leftmoon^2\sqrt{1-e^2}}{t_\leftmoon r_{\leftmoon,0}}\approx\SI{1064}{\meter\per\second}
+\end{equation}
+Za Zemljo ponovno parametre izračunamo preko razmerja (\ref{eq:razmerje}), saj smo za izhodišče izbrali težišče.
+\begin{equation}\label{eq:razmerje}
+    {\bf r_{\varoplus, 0}} = -\frac{M_\leftmoon}{M_\varoplus}{\bf r_{\leftmoon, 0}} \qquad \left({\bf v_{\varoplus, 0}} = -\frac{M_\leftmoon}{M_\varoplus}{\bf v_{\leftmoon, 0}}\right)
+\end{equation}
+
+\section{Simulacija}
+\subsection{Izračun pospeškov}
+
+Glede na podano predpostavke krožne orbite sistema Zemlja-Luna okoli Sonca se izplača izhodišče postaviti v težišče tega sistema, saj bo lažje delati z manjšimi številkami, kot bi bile v primeru, da bi za izhodišče vzeli Sonce. Na ta način si lahko privoščimo tudi natančnejšo simulacijo pri enaki opremi. Ker je orbita našega sistema okoli Sonca krožna, je tudi obodna hitrost konstantna, posledično to velja tudi za kotno hitrost, zato lahko gravitacijski pospešek zaradi Sonca izračunamo glede na čas in vektor od težišča sistema do Zemlje/Lune:
+\begin{equation}
+    {\bf d}=d_{Z-S}\begin{bmatrix}\cos{\theta(t)}\\\sin{\theta(t)}\\0\end{bmatrix} + \bf r
+    \label{eq:sundist}
+\end{equation}
+\begin{equation}
+    {\bf a_g}=-\frac{GM_\odot}{d^3}{\bf d} + \left(\frac{2\pi}{t_\varoplus}\right)^2({\bf d}-{\bf r})
+    \label{eq:sungrav}
+\end{equation}
+V enačbi za oddaljenost od Sonca (\ref{eq:sundist}) z $\bf r$ označimo razdaljo od težišča sistema do Zemlje/Lune, s $\theta(t)$ pa časovno odvisnost smeri Sonca glede na sistem, ki jo računamo kot $\theta(t)=\frac{2\pi t}{t_\varoplus} + \theta_0$, kjer $\theta_0$ predstavlja začetni kot. Dobljeni vektor oddaljenosti vstavimo v gravitacijski zakon in upoštevamo še učinek kroženja, ki se kaže kot centrifugalna sila na telesa v sistemu v težišču (\ref{eq:sungrav}).
+V sistemu je še ena notranja sila: gravitacija med Zemljo in Luno:
+\begin{equation} \label{eq:grav}
+    {\bf a_g'}=-\frac{GM}{R^3}{\bf R}
+\end{equation}
+Med telesoma velja običajen gravitacijski zakon (\ref{eq:grav}), z $\bf R$ pa označimo vektor med telesoma. Vektor $\bf r$ za enačbo (\ref{eq:sundist}) dobimo tako, da $\bf R$ pomnožimo s primerno predznačenim razmerjem mas Lune in Zemlje. 
+Tako izračunamo vse pospeške, in lahko simuliramo sistem dveh teles z zunanjo silo. Uporabimo \textit{scipy.integrate.solve\_ivp()}, poleg časa pa operira z dvanajstercem podatkov -- 4 trojice krajev in hitrosti Zemlje in Lune.
+
+\subsection{Časovna resolucija in natančnost}
+
+Ker problema ne bi kalsificirali kot \textit{stiff}, je primerna metoda \textit{RK45}, sicer tudi druge (preizkušeno v preliminarnih simulacijah), npr. \textit{BDF} dajejo zelo podobne rezultate, če nastavimo dovolj veliko natančnost.
+Moja strojna oprema (32 GB RAM) programu pri trenutnem postopku omogoča ok. 150 milijonov korakov, kar pri 20 letih, ki jih želimo simulirati omogoča časovno resolucijo \SI{4,2}{\second}. Ker se Luna v ravnini ekliptike giblje s hitrostmi \SI{e3}{\meter\per\second}, se Zemlja približno \SI{e2}{}-krat počasneje (razmerje mas), torej v časovnem koraku prepotuje nekaj reda velikosti \SI{10}{\meter}. Ker pa se v smeri, pravokotni na ekliptiko hitrosti več kot 1 red manjše, bi bilo smiselno vzeti za absolutno toleranco \SI{1}{\meter} oz. 1 enota v katerikoli SI enoti (v poštev prideta še hitrost in pospešek), je pa v tem primeru precej lažje vzeti le relativno toleranco \SI{e-8}{}, oz. če želimo res natančne rezultate, je \SI{e-9}{} več kot dovolj, ker se pri manjših tolerancah skoraj nič več ne spremeni.
+
+\subsection{Popravek začetnih pogojev}
+
+Kljub natančnem postopku določanja in izračuna začetnih parametrov (\ref{sec:pridob_pod} in \ref{sec:izr_pod}) simulacije pride do odstopanja že pri dolžini siderskege meseca, ta namreč traja \SI{28,86}{dni}, kar je skoraj 6\% preveč in ne omogoča pridobivanja natančnih podatkov. Najverjetnejši vir odstopanja je začetna tangencialna hitrost Lune (v ravnini ekliptike), saj smo jo določali preko elipse, za katero pa že vemo \cite{NASA:Lunar_orbit}, da se njena ekscentričnost spreminja. Poleg tega tudi vmesne ekscentričnosti precej presegajo interval (dosežejo tudi več kot \SI{0,15}{}), ki ga razberemo iz meritev \cite{NASA:Lunar_orbit}. Ker siderski mesec poznamo in ni eden od iskanih podatkov v nalogi, sem se odločil ročno prirediti začetno hitrost tako, da se bo povprečen siderski mesec v 20 simuliranih letih ujemal z dejanskim na 6 mest natančno. S postopkom, podobnim bisekcijski metodi sem iterativno določil, da mora biti začetna hitrost manjša za \SI{17,177}{\meter\per\second} oz. za približno {1,6}\%, s čimer dobimo približno \SI{1047}{\meter\per\second}. Tako so tudi ekscentričnosti znotraj pričakovanih vrednosti in tako si omogočimo, da bodo podatki, pridobljeni s simulacijo natančnejši. Ostalih parametrov nisem spreminjal (razen seveda začetne hitrosti Zemlje, ki se računa neposredno iz začetne hitrosti Lune).
+
+\section{Analiza}
+
+\textit{Opomba: na grafih je namesto decimalne vejice uporabljena pika, leto pa je označeno z \SI{}{yr}.}
+
+Najprej poiščemo apsidne točke - trenutke, ko Luna doseže največjo/najmanjšo oddaljenost od Zemlje ali težišča. S pomočjo knjižnice \textit{numpy} lahko to naredimo zelo hitro. Pri tem smo upoštevali, da je sprememba oddaljenosti zaradi nagnjenosti orbite zanemarljiva. Nato lahko izračunamo kot orientacije velike polosi elipse v našem koordinatnem sistemu. to lahko preprosto kot: $\varphi=\arctan(y/x)$\footnote{uporabimo funkcijo \textit{arctan2()}, ki upošteva predznake in vrača kote na intervalu polnega in ne le polovičnega kota}, kjer vzamemo koordinate apogejev.
+
+Če nas zanima še orientacije nagiba orbite glede na ekliptiko, moramo določiti točke z največjo/najmanjšo oddaljenostjo od ekliptike, in ponovno računamo smer: $\alpha=\arctan(y/x)$\footnotemark[2]. Smer računamo za točke, v katerih doseže največjo pozitivno oddaljenost ($z$) od ravnine ekliptike.
+\subsection{Meseci}
+\label{sec:meseci}
+\par{} Zaradi Lunine precesije poznamo več mesecev, ki trajajo različno dolgo. Iz podatkov naše simulacije lahko izračunamo tudi povprečne dolžine le teh. 
+
+Prvi je siderski, katerega dolžino poznamo in po katerem smo tudi nastavili simulacijo. Trajanje dobimo tako, da poiščemo točke, v katerih se predznak $y$ koordinate Lune spremeni iz negativnega na pozitivnega. Histogram \ref{gr:hist_sid} prikazuje frekvenco različnih trajanj, graf \ref{gr:sid} pa časovno odvisnost trajanja skozi simulacijo.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/sid.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Trajanje siderskih mesecev skozi simulacijo}
+        \label{gr:sid}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/hist_sid.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Histogram trajanj siderskih mesecev}
+        \label{gr:hist_sid}
+    \end{graph}
+\end{minipage}\\\\
+
+Naslednji je drakonski mesec. Trajanje lahko določimo podobno kot za siderski mesec, le da namesto ene od koordinat v ravnini ekliptike gledamo $z$ koordinato (tj. oddaljenost od ravnine ekliptike). Časovni potek in porazdelitev trajanj prikazujeta grafa \ref{gr:drak} in \ref{gr:hist_sid}.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/drak.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Trajanje drakonskih mesecev skozi simulacijo}
+        \label{gr:drak}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/hist_drak.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Histogram trajanj drakonskih mesecev}
+        \label{gr:hist_drak}
+    \end{graph}
+\end{minipage}\\\\
+
+Zadnji, ki nas zanima, je anomalistični mesec, katerega trajanje določimo kot čas med zaporednima perigejema Lune. Časovni potek in porazdelitev trajanj prikazujeta grafa \ref{gr:anom} in \ref{gr:hist_anom}.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/anom.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Trajanje anomalističnih mesecev skozi simulacijo}
+        \label{gr:anom}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=0.95\linewidth]{Grafi/hist_anom.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Histogram trajanj anomalističnih mesecev}
+        \label{gr:hist_anom}
+    \end{graph}
+\end{minipage}\\\\
+
+Pri vseh časovnih potekih opazimo dokaj periodično obliko brez dodatnih trendov, kar kaže na stabilno simulacijo, kjer se povprečje ne premika zaradi nenaravnih trendov, ki v realnosti ne obstajajo (povprečna trajanja mesecev se zelo malo spreminja (red velikosti \SI{e-9}{} dneva na leto).
+
+S simulacijo dobljene vrednosti lahko primerjamo z izmerjenimi (tabela \ref{tab:meseci}). Glede na standardno deviacijo se vsi zelo dobro ujemajo.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c c c|}
+        \cline{2-4}
+        \multicolumn{1}{c|}{} & \multicolumn{3}{c|}{Mesec} \\
+        \cline{2-4}
+        \multicolumn{1}{c|}{} & siderski & drakonski & anomalistični  \\ [0.5ex]
+        \hline
+        Simulirano trajanje [dni] & {27,3216(4)} & \SI{27,2116}{}& \SI{27,5584}{}\\
+        St. dev. [dni] &  \SI{0,0646}{}&  \SI{0,1221}{}&  \SI{1,1411}{}\\
+        Napaka & \SI{2,4e-3}{} & \SI{5e-3}{} & \SI{0,04}{}\\
+        Trajanje [dni] \cite{wiki:month} & {27,3216(6)}& \SI{27,2122}{}& \SI{27,5545}{}\\
+        Odstopanje & \SI{7e-7}{} & \SI{1,5e-5}{} & \SI{1,4e-4}{}\\
+        \hline
+    \end{tabular}
+    \caption{Simulirana in dejanska trajanja mesecev}
+    \label{tab:meseci}
+\end{table}
+
+S pomočjo trajanj teh treh mesecev že lahko ocenimo periodi, ki jih naloga od nas zahteva. Dobimo jih kot najmanjši skupni večkratnik mesecev (\ref{eq:periode}): periodo precesije vozlov s siderskim in z drakonskim, periodo precesije apsidnih točk pa s siderskim in z anomalističnim.
+\begin{equation}\label{eq:periode}
+    \frac{1}{T}=\frac{1}{t_1}-\frac{1}{t_2}
+\end{equation}
+Tako za periodo precesije vozlov dobimo \SI{6758}{dni} oz. \SI{18,50}{let}, kar je manj kot mesec dni razlike z dejansko vrednostjo. Za periodo precesije apsidnih točka pa dobimo \SI{3180}{dni} oz. \SI{8,706}{let}, kar je manj kot dva meseca od prave vrednosti. 
+
+\subsection{Ekscentričnost}
+\label{sec:eksc}
+Ekscentričnost je najpreprosteje računati v apsidnih točkah, ker pa imamo del podatkov za perigeje, lahko te primerjamo. Graf \ref{gr:eksc1} prikazuje celotno obdobje, graf \ref{gr:eksc2008} pa le odsek, za katerega imamo dejanske podatke \cite{NASA:Lunar_orbit}, ki so prikazani na posnetku zaslona na sliki \ref{fig:eksc}, kjer je z rdečo označen perigej, v katerem se začne simulacija.
+\begin{graph}
+    \centering
+    \includegraphics[width=1\linewidth]{Grafi/Ekscentricnost.png}
+    \caption{Simulirana ekscentričnost Lunine orbite v perigejih (20 let)}
+    \label{gr:eksc1}
+\end{graph}
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/Ekscentricnost3.png}
+        \captionsetup{width=.8\linewidth}
+        \caption{Simulirana ekscentričnost Lunine orbite (2008-2011)}
+        \label{gr:eksc2008}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/EkscNasa.png}
+        \captionsetup{width=0.8\linewidth}
+        \caption{Dejanska ekscentričnost v perigejih (2008-2011)}
+        \label{fig:eksc}
+    \end{figure}
+\end{minipage}\\\\
+
+Kakor je razvidno iz grafa \ref{gr:eksc2008} in slike \ref{fig:eksc}, je simulirana ekscentričnost v perigejih zelo podobna dejanski (tako po obliki kot po vrednostih), poleg tega na grafu \ref{gr:eksc1} vidimo, da ni nobenega stalnega trenda proti večji/manjši ekscentričnosti, kar podpira trditev o stabilnosti simulacije sistema.
+
+\subsection{Periodi precesij}
+\label{sec:pp}
+Nazadnje še direktno določimo iskani periodi precesij (vozlov in apsidnih točk). To naredimo preprosto tako, da narišemo grafa $\varphi(t)$ in $\alpha(t)$.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+    \centering
+    \includegraphics[width=1\linewidth]{Grafi/varphi.png}
+    \captionsetup{width=.8\linewidth}
+    \caption{Orientacija velike polosi Lunine orbite}
+    \label{gr:varphi}
+\end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+    \centering
+    \includegraphics[width=1\linewidth]{Grafi/alpha.png}
+    \captionsetup{width=.8\linewidth}
+    \caption{Orientacija normale elipse na ravn. ekliptike}
+    \label{gr:alpha}
+\end{graph}
+\end{minipage}\\\\
+
+Periodo precesije apsidnih točk razberemo z grafa \ref{gr:varphi} najlažje tako, da preprosto izračunamo razliko med prelomoma grafa, tj. čas, ki je bil potreben za obrat za $2\pi$. V tem primeru to znaša približno \SI{8,6778}{let} oz. \SI{3170}{dni}, kar se od dejanske vrednosti razlikuje za zgolj 2\%.
+
+Periodo precesije vozlov pa razberemo z grafa \ref{gr:alpha}, ki bi ga lahko zaradi majhne amplitude vmesnega nihanja aproksimirali z linearno funkcijo, oz. če poenostavimo, vzamemo razliko med končnim in začetnim kotom ter absolutno vrednost delimo z $2\pi$, nato pa še prištejemo 1 za vmesni prelom, ter delimo 20 let z dobljeno vrednostjo (št. obratov). Tako dobimo periodo precesije približno \SI{18,7216}{let} oz. \SI{6838}{dni}, kar je natančno na manj kot {0,7}\%. Lahko poskusimo še z natančnejšo metodo prileganja funkcije $y=Ax+B+C\sin(Dx+E)$ (s pomočjo \textit{scipy.otimize.curve\_fit}), vendar vmesno nihanje ni sinusno in ne dobimo nič boljšega prileganja od navadnega linearne funkcije, s katero dobimo naklona, ki ju še obtežimo, saj je en veljaven za prvih \SI{15,71}{let} drugi pa za preostanek (do 20 let). Tako dobimo povprečen naklon \SI{-1,08e-8}{(rad)\per yr}, kar ustreza periodi \SI{6734}{dni} oz. \SI{18,4}{let}. Tretja možnost je iskanje čase, kjer se kot najbolj približa isti vrednosti (ker nimamo dveh prelomov, lahko prištejemo določen kot, da ju dobimo). Če izberemo $\alpha=2$, potem dobimo časa \SI{0,1724}{let} in \SI{18,7158}{let}, kar nam da \SI{18,54}{let} oz. \SI{6772}{dni}, to pa je le {0,3}\% od dejanske vrednosti.
+
+\section{Veljavnost simulacije}
+\subsection{Teoretična ocena}
+Glede na natančno izbiro začetnih pogojev in natančnost simulacije (simuliramo le sistem Zemlja-Luna, za Sonce simuliramo le vpliv), kvalitativno ocenjeno stabilnost sistema v \ref{sec:meseci} in \ref{sec:eksc} ter dobro ujemanje z dejanskimi periodami precesij bi lahko ocenili, da je simulacija veljavna (kljub približkom, ki smo jih delali). Seveda je treba stabilnost oceniti še kvantitativno. Najprej preverimo, da ekscentričnost res nima trenda. Za korelacijski koeficient med časom in ekscentričnostjo dobimo {-0,02}, kar pomeni, da praktično ni korelacije. Na grafu \ref{gr:e_correl} je prikazana tudi najbolje prilegajoča se premica.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/eksc_corel.png}
+        \captionsetup{width=0.8\linewidth}
+        \caption{Korelacija med ekscentričnostjo in časom}
+        \label{gr:e_correl}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/d_corel.png}
+        \captionsetup{width=0.8\linewidth}
+        \caption{Korelacija med razdaljo Luna-Zemlja in časom}
+        \label{gr:d_correl}
+    \end{graph}
+\end{minipage}\\\\
+
+Na grafu \ref{gr:d_correl} je prikazano še spreminjanje oddaljenosti s časom, ki sicer tako kot večina spremenljivk kvaziperiodično niha, a ne kaže opaznejšega trenda, saj je naklon prilegajoče se premice \SI{390}{\meter \per yr}, korelacijski koeficient pa \SI{-1,5e-4}{}, kar pomeni, da korelacije praktično ni, čeprav bi v primeru simulacije nekaj redov velikosti daljšega obdobja napaka postala znatna.
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/beta_max.png}
+        \captionsetup{width=0.8\linewidth}
+        \caption{Maksimalni pozitivni koti Lune glede na ekliptiko skozi simulacijo}
+        \label{gr:b_max}
+    \end{graph}
+\end{minipage}\begin{minipage}[t]{0.45\textwidth}
+    \begin{graph}
+        \centering
+        \includegraphics[width=1\linewidth]{Grafi/beta_min.png}
+        \captionsetup{width=0.8\linewidth}
+        \caption{Maksimalni negativni koti Lune glede na ekliptiko skozi simulacijo}
+        \label{gr:b_min}
+    \end{graph}
+\end{minipage}\\\\
+
+Tako zelo velike natančnosti pa ne zagotavljajo podatki za oddaljenost Lune od ekliptike, saj kot je razvidno na grafih \ref{gr:b_max} in \ref{gr:b_min} imajo koti stalen, sicer majhen, a zaznaven trend padanja (\SI{-2,61e-5}{(rad)\per yr} oz. \SI{-2,63e-5}{(rad)\per yr}, s korelacijo približno {-0,1}), poleg tega še amplituda niha s časom, česar nismo predvideli ob nastavitvi simulacije. To pomeni, da višina Lune nad ekliptiko ni čisti sinus, kar se je sprva zdela veljavna predpostavka. Tudi, če bi želeli nastaviti parametre $z$-komponente Lune pravilno, za to nisem našel nobenih pravih podatkov na spletu, zato ima simulacija to napako. Napaka lahko malo vpliva na celotno gibanje v sistemu Zemlja-Luna, neposredno pa ne vpliva na periodo vozlov, določeno v \ref{sec:pp} (razen posredno prek potencialnega vpliva na celotno gibanje), vpliva pa neposredno na dolžino drakonskega meseca (\ref{sec:meseci}), saj stalen trend spuščanja malo podaljšuje čas med zaporednima prehodoma ekliptike od spodaj navzgor, ampak pri velikosti trenda bi se to poznalo šele na 6. decimalnem mestu, kar ne vpliva na 4 decimalna mesta natančno navedeni rezultat. Ta napaka se torej lahko pozna izključno pri gibanju, se pa bolj očitno lahko pozna še dodatno (kvazi-)periodično nihanje amplitude, ki ga zaradi pomanjkanja podatkov nismo mogli upoštevati pri začetnih parametrih.\label{sec:t_o}
+
+\subsection{Preizkus na realnih podatkih}
+Po podatkih \cite{apsid_calc} naj bi bil naslednji mlaj (glede na čas pisanja) 4. avgusta 2024 ob 11:14UTC, takrat bo navidezna kotna razdalja med Luno in Soncem za opazovalca na Zemlji približno \ang{4,1}\footnote{določeno s pomočjo spletne aplikacije \textit{Stellarium Web} in pada, ki sicer predvideva mlaj 20 minut prej}. Od začetka simulacije do izbranega trenutka je približno \SI{5,0305e8}{\second}. Kot Sonca v koordinatnem sistemu je takrat {3,848}, kot Lune pa {3,759}, kar pomeni, da sta približno \ang{5} narazen, tj. je napaka simulacije zgolj 9 h (zaostanek). Glede na natančnost začetnih podatkov (kot Sonca na stopinjo natančno $\sim \pm\SI{2}{h}$), je rezultat zelo dober. Kot v simulaciji znaša približno \ang{3,4} in pada. Zaradi neupoštevanja periodičnega gibanja (\ref{sec:t_o}) ne bom komentiral natančnosti tega rezultata.
+
+Če preverimo še kdaj je Luna v apsidnih točkah: prvi avgustovki perigej naj bi letos natopil 21. avgusta ob 5:06UTC, simulacija pa ga predvideva za isti dan ob 4:48UTC, prvi avgustovski apogej naj bi se zgodil 9. avgusta 1:33UTC, simulirani podatki pa ga napovedujejo za isti dan ob 17:42UTC. Torej je natančnost simulacije v tem primeru boljša kot 1 dan.
+\section{Zaključek}
+Simulacija, ki je nastala v tej nalogi ima nekaj približkov in napak, ki vplivajo na rezultate, a so pridobljene vrednosti kljub temu relativno zelo natančne (če ne upoštevamo napake pri oddaljenosti od ravnine ekliptike so vse dobljene vrednosti znotraj nekaj odstotkov odstopanja od dejanskih, nekatere pa so celo natančne na manj kot promil). Simulacija se dobro približa periodama precesij, ki smo jih iskali v tej nalogi, saj ne glede na metodo obdelave podatkov dobimo rezultat znotraj 2\% odstopanja. Ker smo izhodišče koordinatnega sistema postavili v težišče sistema Zemlja-Luna in efekt Sonca le simulirali, smo pridobili na natančnosti, saj bi sicer vse razdalje bile za red velikosti \SI{e11}{\meter} večje (v primerjavi z razdaljami v našem sistemu, ki so reda velikosti \SI{e8}{\meter}), kar bi znatno zmanjšalo natančnost simulacije oz. podaljšalo čas reševanja diferencialne enačbe za enako natančnost. Zaradi visoke natančnosti tudi ne pride do izgube energije sistema, ki jo lahko opazimo pri manjši natančnosti (pojavijo so numerične napake -- premer orbite se manjša, lahko postane tudi nestabilna, težišče sistema zapusti izhodišče, itd.). Zato menim, da je simulacija zanesljiva in dovolj natančna tudi za napovedovanje apsidnih točk Lunine orbite in Luninih men na dan natančno, kakšen pojav, ki zahteva visoko natančnost (npr. mrk) pa bi bilo težko napovedati, predvsem zaradi pomanjkljivih začetnih parametrov.
+
+\newpage
+
+\section*{Terminologija}
+\addcontentsline{toc}{section}{\protect\numberline{}Terminologija}
+Za lažje razumevanje navajam nekaj uporabljenih terminov, ki niso splošno znani.
+
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{@{}p{0.2\textwidth}p{0.78\textwidth}}
+    \bf anomalistični mesec & čas med zaporednima perigejema Lune\\
+    \bf apogej & najbolj oddaljena apsidna točka pri gibanju okoli Zemlje\\
+    \bf apsidna točka & skrajna (najbližja oz. najbolj oddaljena) na eliptičnem tiru\\
+    \bf drakonski mesec & čas med zaporednima prehodoma istega vozla Lunine orbite\\
+    \bf ekliptika & ravnina Osončja, v tem primeru ravnina, ki jo tvori tir težišča sistema Zemlja-Luna, v katerem je tudi Sonce\\
+    \bf perigej & najbližja apsidna točka pri gibanju okoli Zemlje\\
+    \bf siderski mesec & čas Luninega obhoda Zemlje (glede na zvezdno ozadje)\\
+    \bf vozel & v astronomiji točka, kjer se sekata ravnini orbit telesa in drugega telesa, ki kroži okoli prvega
+\end{tabular}\\
+
+\newpage
+
+\printbibliography
+\addcontentsline{toc}{section}{\protect\numberline{}Literatura}
+    
+\end{document}

@@ -1,0 +1,19 @@
+\begin{tikzpicture}[scale=1.5]
+\draw [-] (0,0) -- (2.61,1.41) node[pos=0.6,below=2] {$d_{Z-S}$};
+\draw [-] (1.61,1.41) -- (2.61,1.41) node[pos=0.4,below] {$r$};
+\draw [->] (1.61,1.41) -- (1.61,1) node[above left] {$v_\leftmoon$};
+\draw [dashed, ->] (0,1.41) -- (5,1.41) node[below] {x};
+\draw [dashed, ->] (2.61,0) -- (2.61,3.5) node[left] {y};
+\draw [->, line width=1] (0,3) -- (-0.01,3);
+
+\draw[fill=black!10] (0,0) circle (0.5) node {$M_\odot$};
+\draw[] (0,0) circle (3);
+\draw[fill=black!30] (2.61,1.41) circle (0.2) node{$M_\varoplus$};
+\draw[] (2.61,1.41) circle (1);
+\filldraw[black] (1.61,1.41) circle (0.05) node[above] {$M_\leftmoon$};
+
+\draw [blue] (3.21, 1.41) arc (0:180:0.6) node [above right] {$\varphi_0$};
+\draw [blue] (4.11, 1.41) arc (0:208:1.5) node [above left] {$\theta_0$};
+
+
+\end{tikzpicture}
