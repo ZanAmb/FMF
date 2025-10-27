@@ -1,0 +1,1 @@
+Realni del amplitude gre pri višjih frekvencah pod 0, vendar se potem vrne do 0, kar ovrže možnost offseta, verjeten razlog je nastavitev analizatorja, a so enako težavo javili tudi kolegi. Ostalo brez težav.
