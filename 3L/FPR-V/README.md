@@ -1,0 +1,1 @@
+Tu so naložena moja poročila vaj s praktikuma 5, namenjena so predvsem pripravi na vaje (predvsem kaj je treba izmeriti in na kaj biti pozoren) in primerjavi rezultatov. Kopiranja meritev in rezultatov ne dovoljujem. Uporaba na lastno odgovornost.
