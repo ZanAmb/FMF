@@ -1,0 +1,1 @@
+Razen zamudnosti lepa vaja.
