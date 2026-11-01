@@ -1,0 +1,1 @@
+Pri Thomsonovem problemu sem naredil manjšo napako, da nisem fiksiral enega naboja, kar je verjetno zmotilo Powell-ovo metodo. Drugi del je bil zanimiv, predvsem preizkušanje uteži, ki jih nismo omenjali na predavanju (ReLU se je izkazala za izjemno učinkovito).
